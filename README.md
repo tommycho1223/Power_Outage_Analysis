@@ -68,7 +68,7 @@ The dataset records major power outage data from January 2000 to July 2016. I wi
 It seems that most power outages occur within around `20,000` minutes. Also, there are outliers, such as around `50,000`, `80,000`, and over `100,000` minutes.
 
 <iframe
-  src="assets/file-name.html"
+  src="assets/anomaly_lvl_distri.html"
   width="800"
   height="600"
   frameborder="0"
@@ -79,7 +79,7 @@ Positive anomaly levels mean warm ocean temperatures, while negative anomaly lev
 ### Bivariate Analysis
 
 <iframe
-  src="assets/file-name.html"
+  src="assets/duration_by_climate_region.html.html"
   width="800"
   height="600"
   frameborder="0"
@@ -88,7 +88,7 @@ Positive anomaly levels mean warm ocean temperatures, while negative anomaly lev
 From the first graph, we can see that different climate regions show varying outage durations. `Northeast` and `Central` regions appear to have more frequent long-duration outages, while `Hawaii` and `West North Central` have shorter durations with fewer outliers. On the other hand, significant outliers, which are above `40,000` hours are present across multiple regions such as `East North Central` and `Northeast`, etc.
 
 <iframe
-  src="assets/file-name.html"
+  src="assets/duration_vs_anomaly_level.html"
   width="800"
   height="600"
   frameborder="0"
@@ -109,9 +109,12 @@ If the p-value is **equal or lower** than `0.05`, we reject the null hypothesis,
 
 If the p-value is **greater** than `0.05`, we fail to reject the null hypothesis, which means there is no significant evidence that mean outage durations vary between climate regions.
 
-
-
-
+<iframe
+  src="assets/mean_duration.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
 
 The p-value is greater than `0.05`, so we fail to reject the null hypothesis and there is no significant evidence that the mean outage durations vary significantly between different climate regions. This suggests that any variation in mean outage durations across climate regions could be due to **random chance** rather than a systematic difference.
 
@@ -145,3 +148,10 @@ The tagrget variable is `outage_duration`.
 
 
 ## Fairness Analysis
+
+<iframe
+  src="assets/fairness_model.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
