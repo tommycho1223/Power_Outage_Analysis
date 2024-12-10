@@ -47,9 +47,25 @@ The dataset records major power outage data from January 2000 to July 2016. I wi
 
 - Before I drop **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**, I combine them as **outage_start** and **outage_restoration** in order to make the data clearer.
 
+	YEAR	MONTH	U.S._STATE	CLIMATE.REGION	...	OUTAGE.RESTORATION.TIME	CAUSE.CATEGORY	CAUSE.CATEGORY.DETAIL	OUTAGE.DURATION
+0	2011	7	Minnesota	East North Central	...	20:00:00	severe weather	NaN	3060
+1	2014	5	Minnesota	East North Central	...	18:39:00	intentional attack	vandalism	1
+2	2010	10	Minnesota	East North Central	...	22:00:00	severe weather	heavy wind	3000
+3	2012	6	Minnesota	East North Central	...	23:00:00	severe weather	thunderstorm	2550
+4	2015	7	Minnesota	East North Central	...	07:00:00	severe weather	NaN	1740
+
 - 
 
 ### Univariate Analysis
+
+<iframe
+  src="assets/duration_hist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+It seems that most power outages occur within around `20,000` minutes. Also, there are outliers, such as around `50,000`, `80,000`, and over `100,000` minutes.
 
 <iframe
   src="assets/file-name.html"
@@ -58,19 +74,71 @@ The dataset records major power outage data from January 2000 to July 2016. I wi
   frameborder="0"
 ></iframe>
 
+Positive anomaly levels mean warm ocean temperatures, while negative anomaly levels mean cool ocean temperatures. The graph shows that negative anomaly levels cause more power outages and range from approximately `-1.5` to `+2.5`. It is interesting that it seems around `+1.5` to `+2.0` are ideal temperatures to avoid power outages.
+
 ### Bivariate Analysis
 
+<iframe
+  src="assets/file-name.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+From the first graph, we can see that different climate regions show varying outage durations. `Northeast` and `Central` regions appear to have more frequent long-duration outages, while `Hawaii` and `West North Central` have shorter durations with fewer outliers. On the other hand, significant outliers, which are above `40,000` hours are present across multiple regions such as `East North Central` and `Northeast`, etc.
+
+<iframe
+  src="assets/file-name.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The outage Duration vs. Anomaly Level graph indicates that a positive anomaly level likely has a lower power outage durations and smaller number of occurrences. A few extreme values (above 40,000 hours) are present at both positive and negative anomaly levels but `-0.4` and `-0.5` have significant outliers.
 
 ## Assessment of Missingness
 
 
 ## Hypothesis Testing
 
+**Null Hypothesis**: The frequency of power outages **does not** vary significantly between different climate regions.
+
+**Alternative Hypothesis**: The frequency of power outages **varies significantly** between different climate regions.
+
+If the p-value is **equal or lower** than `0.05`, we reject the null hypothesis, and the mean outage durations vary significantly between different climate regions.
+
+If the p-value is **greater** than `0.05`, we fail to reject the null hypothesis, which means there is no significant evidence that mean outage durations vary between climate regions.
+
+
+
+
+
+The p-value is greater than `0.05`, so we fail to reject the null hypothesis and there is no significant evidence that the mean outage durations vary significantly between different climate regions. This suggests that any variation in mean outage durations across climate regions could be due to **random chance** rather than a systematic difference.
 
 ## Framing a Prediction Problem
 
+My model will predict **the duration of a power outage** based on various factors available in the dataset.
+
+The target variable is `outage_duration`, which indicates the duration of power outage in minutes.
+
+The features are:
+
+`climate_region`: The climate region where the outage occurred. Outages in different regions may have different durations due to local infrastructure and weather conditions.
+
+`cause_category`: The cause of the outage (e.g., equipment failure, severe weather, etc.). Different causes (e.g., severe weather vs. equipment failure) likely result in different outage durations.
+
+`month`: The month the outage occurred.
+
+`anomaly_level`: The El Niño/La Niña index (oceanic anomaly level). The El Niño/La Niña index may influence the severity of weather-related outages.
+
+`outage_start`: The start date and time of the outage.
+
 
 ## Basline Model
+
+I'm going to use two of the features I mentioned in Step 5: Framing a Prediction Problem for the baseline model.`climate_region` and `anmonaly_level`.
+
+The tagrget variable is `outage_duration`.
 
 
 ## Final Model
