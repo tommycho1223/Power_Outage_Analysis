@@ -20,6 +20,19 @@ I have broken the project into several key steps, each focusing on a different p
 
 For this analysis, I will utilize the Power Outage dataset obtained from the Purdue University website. The original dataset contains 1,540 rows and 57 columns; however, the top six rows include metadata and lack meaningful content. To prepare the dataset for analysis, I will drop the first five rows and use the remaining rows as column names, as the original dataset does not have valid column headers. The dataset records major power outage data from January 2000 to July 2016.
 On the other hand, I will only focus on the columns I need for this analyze, so I will drop the columns I don't use.
+
 | Column | Description |
+| ----- | ---------------------------|
 | **'year'** | The year when the outage event occurred |
 | **'month'** | The month when the outage event occurred |
+| **'u_s__state'** | All the states in the U.S. |
+| **'climate_region**' | U.S. Climate regions as specified by National Centers for Environmental Information |
+| **'anomaly_level'** | The oceanic El Niño/La Niña (ONI) index referring to the cold and warm episodes by season |
+| **'climate_category'** | The climate episodes corresponding to the years |
+| **'popden_urban'** | Population density of the urban areas |
+| **'popden_rural'** | Population density of the rural areas |
+| **'outage_start'** | Power outage start date and time (I combined date and time in this new column from the original columns) |
+| **'outage_restoration'** | Power outage store date and time (I combined date and time in this new column from the original columns) |
+| **'cause_category'** | Categories of all the events causing the major power outages |
+| **'cause_category_detail'** | the event categories causing the major power outages |
+| **'outage_duration'** | Duration of outage events (in minutes) |
