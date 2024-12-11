@@ -40,19 +40,21 @@ Below are the column I keep for analyzing.
 | **anomaly_level** | The oceanic El Niño/La Niña (ONI) index referring to the cold and warm episodes by season |
 | **popden_urban** | Population density of the urban areas (persons per square mile) |
 | **popden_rural** | Population density of the rural areas (persons per square mile) |
+| **cause_category** | Categories of all the events causing the major power outages |
+| **outage_duration** | Duration of outage events (in minutes) |
 | **outage_start** | Power outage start date and time (I combined date and time in this new column from the original columns) |
 | **outage_restoration** | Power outage store date and time (I combined date and time in this new column from the original columns) |
-| **cause_category** | Categories of all the events causing the major power outages |
-| **cause_category_detail** | the event categories causing the major power outages |
-| **outage_duration** | Duration of outage events (in minutes) |
+
+
+
 
 ## Data Cleaning and Exploratory Data Analysis
 
 - In order to make it easier to understand the dataset and accurately observe and analyze data, I drop the first five rows because they are meaningless for this analysis (the top fifth rows include metadata and lack meaningful content). I take the sixth row in the original dataset as the column names. Also, I drop columns that are not relevant to the topic I am analyzing next, respectively: **OBS**, **POSTAL.CODE**, **NERC.REGION**, **HURRICANE.NAMES**, **DEMAND.LOSS.MW**, **CUSTOMERS.AFFECTED**, **RES.PRICE**, **COM.PRICE**, **IND.PRICE**, **TOTAL.PRICE**, **RES.SALES**, **COM.SALES**, **IND,SALES**, **TOTAL.SALES**, **RES.PERCEN**, **COM.PERCEN**, **IND.PERCEN**, **RES.CUSTOMERS**, **COM.CUSTOMERS**, **IND.CUSTOMERS**, **TOTAL.CUSTOMERS**, **RES.CUST.PCT**, **COM.CUST.PCT**, **IND.CUST.PCT**, **PC.REALGSP.STATE**, **PC.REALGSP.USA**, **PC.REALGSP.REL**, **PC.REALGSP.CHANGE**, **UTIL.REALGSP**, **UTIL.CONTRI**, **PI.UTIL.OFUSA**, **POPULATION**, **POPPCT_URBAN**, **POPPCT_UC**, **POPDEN_UC**, **AREAPCT_URBAN**, **AREAPCT_UC**, **PCT_LAND**, **PCT_WATER_TOT**, **PCT_WATER_INLAND**, **CAUSE.CATEGORY.DETAIL**, **CLIMATE.CATEGORY**, **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**.
 
-- Before I drop **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**, I combine **outage_start_date** and **outage_start_time** into a new outage_start column, and **outage_restoration_date** and **outage_restoration_time** into a new **outage_restoration** column for easier analysis.
+- Before I drop **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**, I combine **outage_start_date** and **outage_start_time** into a new **outage_start** column, and **outage_restoration_date** and **outage_restoration_time** into a new **outage_restoration** column for easier analysis.
 
-- After filtering and cleaning, we reset the DataFrame index to maintain a clean, ascending index. Below are the first few rows of the cleaned dataset.
+- After filtering and cleaning, we reset the DataFrame index. Below are the first few rows of the cleaned dataset.
 
 | year | month | us_state | climate_region | anomaly_level | popden_urban | popden_rural | cause_category | outage_duration | outage_start | outage_restoration |
 | ----- | --- | --------- | ------------------ | ---- | ----- | ---- | ------------ | ----- | ----------------------- | ----------------------- |
@@ -112,6 +114,8 @@ I create a scatter plot to show the relationship between anomaly level and outag
 
 There does not appear to be a strong relationship between anomaly level and outage duration. The outage Duration vs. Anomaly Level graph indicates that a positive anomaly level likely has a lower power outage durations and smaller number of occurrences. A few extreme values (above 40,000 hours) are present at both positive and negative anomaly levels but `-0.4` and `-0.5` have significant outliers. Despite most points clustering around lower outage durations, there are several extreme outliers with very long outage durations.
 
+
+
 ## Assessment of Missingness
 
 To dig deeper into the missing data in the **climate_region**, I run a permutation test to see if this missingness is linked to the **us_state**. I believe that **climate_region** is **NMAR** (Not Missing at Random).
@@ -127,17 +131,21 @@ To dig deeper into the missing data in the **climate_region**, I run a permutati
   frameborder="0"
 ></iframe>
 
-The figure shows that the missing values ​​in **climate_region** belong to *Hawaii* and *Alaska*, which makese sense because *Hawaii* and *Alaska* are not in continental U.S. Therefore, they don't count as either regions. The missing **climate_region** data is likely **NMAR** because it appears to be influenced by the exclusion of Hawaii and Alaska from the typical climate region classification.
+The figure shows that the missing values ​​in **climate_region** belong to *Hawaii* and *Alaska*, which makes sense because *Hawaii* and *Alaska* are not in the continental U.S. Therefore, they don't count as either regions. The missing **climate_region** data is likely **NMAR** because it appears to be influenced by the exclusion of `Hawaii` and `Alaska` from the typical climate region classification.
+
+
 
 ## Hypothesis Testing
+
+I want to find out if power outages happen more often in some climate regions compared to others.
 
 **Null Hypothesis**: The frequency of power outages **does not** vary significantly between different climate regions.
 
 **Alternative Hypothesis**: The frequency of power outages **varies significantly** between different climate regions.
 
-If the p-value is **equal or lower** than `0.05`, we reject the null hypothesis, and the mean outage durations vary significantly between different climate regions.
+I will use the variance of the outage counts across climate regions as our test statistic. A high variance indicates that some climate regions experience significantly more power outages than others. To test the hypothesis, I will run a permutation test. This means I will shuffle **climate_region** 1000 times and calculate the variance in outage counts each time. Then, I will compare the actual variance to this set of simulated variances. This helps me figure out how likely it is to see the observed variance if the null hypothesis are true.
 
-If the p-value is **greater** than `0.05`, we fail to reject the null hypothesis, which means there is no significant evidence that mean outage durations vary between climate regions.
+I will use a significance level of `0.05`. If the p-value is less than `0.05`, I will reject the null hypothesis, otherwise, I will fail to reject the null hypothesis.
 
 <iframe
   src="assets/mean_duration.html"
@@ -146,41 +154,96 @@ If the p-value is **greater** than `0.05`, we fail to reject the null hypothesis
   frameborder="0"
 ></iframe>
 
-The p-value is greater than `0.05`, so we fail to reject the null hypothesis and there is no significant evidence that the mean outage durations vary significantly between different climate regions. This suggests that any variation in mean outage durations across climate regions could be due to **random chance** rather than a systematic difference.
+The p-value is lesser than `0.05`, so we reject the null hypothesis. The evidence clearly shows that power outage frequency varies across different climate regions. In other words, some regions experience more outages than others. This could be due to factors like local weather patterns, how sturdy the infrastructure is, or other environmental conditions.
 
 ## Framing a Prediction Problem
 
-My model will predict **the duration of a power outage** based on various factors available in the dataset.
+My model will predict **the duration of a power outage** based on various factors available in the dataset. This is a **regression problem** since the response variable, outage_duration, is a continuous numerical value.
 
-The target variable is `outage_duration`, which indicates the duration of power outage in minutes.
+The target variable is `outage_duration`, which indicates the duration of power outage in minutes. Understanding and predicting outage duration can help utility companies prepare for restoration efforts and allocate resources effectively, ultimately improving response times and service reliability.
 
 The features are:
 
-`climate_region`: The climate region where the outage occurred. Outages in different regions may have different durations due to local infrastructure and weather conditions.
+1. `climate_region`: The climate region where the outage occurred. Outages in different regions may have different durations due to local infrastructure and weather conditions.
 
-`cause_category`: The cause of the outage (e.g., equipment failure, severe weather, etc.). Different causes (e.g., severe weather vs. equipment failure) likely result in different outage durations.
+2. `cause_category`: The cause of the outage (e.g., equipment failure, severe weather, etc.). Different causes (e.g., severe weather vs. equipment failure) likely result in different outage durations.
 
-`month`: The month the outage occurred.
+3. `month`: Seasonal factors (e.g., winter storms, summer heatwaves) may influence outage duration.
 
-`anomaly_level`: The El Niño/La Niña index (oceanic anomaly level). The El Niño/La Niña index may influence the severity of weather-related outages.
+4. `anomaly_level`: The El Niño/La Niña index (oceanic anomaly level). The El Niño/La Niña index may influence the severity of weather-related outages.
 
-`outage_start`: The start date and time of the outage.
-
+My evaluation metric is Root Mean Squared Error (RMSE) because RMSE measures the average size of prediction errors, making it a solid choice for continuous numerical predictions like outage durations. It also penalizes larger errors more heavily than Mean Absolute Error (MAE), which is crucial since big miscalculations in outage durations can cause serious disruptions. Plus, RMSE is easy to understand because it uses the same units as the response variable—in this case, minutes.
 
 ## Basline Model
 
-I'm going to use two of the features I mentioned in Step 5: Framing a Prediction Problem for the baseline model.`climate_region` and `anmonaly_level`.
+My baseline model aims to predict the duration of power outages (in minutes) using a simple linear regression model with two features:
 
-The tagrget variable is `outage_duration`.
+1. `climate_region`: The climate region where the outage occurred (Nominal).
+- **Categorical Feature Encoding**: The climate_region feature was encoded using One-Hot Encoding to convert each unique region into binary columns.
 
+2. `month`: The month when the outage occurred (Quantitative).
+- **Numerical Feature Scaling**: The month feature was standardized using StandardScaler to ensure it contributes appropriately to the model.
+
+The performance metrics are:
+
+1. **Mean Squared Error (MSE)** Measures the average squared difference between the predicted and actual outage durations.
+
+2. **R² Score** Indicates how well the model explains the variance in the target variable.
+
+As the result, **Mean Squared Error (MSE)** is 59924559.29, and **R² Score** is 0.02. The baseline model’s performance is poor due to limited features and the complexity of the prediction task. Plus, predicting outage duration is not straightforward--many factors interact and influence the outcome. A basic model with only a few features might miss these complexities and give oversimplified predictions.
+
+In the final model, I will aim to improve these metrics by incorporating additional features, feature engineering, and using a more powerful model.
 
 ## Final Model
 
+In the Final Model, the following features were used:
+
+### Quantitative Feature, Scaled using StandardScaler
+
+1. `month`: The month of the outage captures seasonality patterns that can affect power outages. For example, certain regions are more prone to severe weather (e.g., hurricanes, snowstorms) during specific months.
+
+2. `anomaly_level`: This feature represents the El Niño/La Niña index, which measures oceanic anomalies affecting global weather. These anomalies can result in extreme weather patterns, influencing the frequency and duration of outages.
+
+### Nominal Feature, One-Hot Encoded
+
+3. `climate_region`: Different regions have varying infrastructure resilience and susceptibility to different weather conditions, which can influence how long it takes to restore power after an outage.
+
+4. `cause_category`: Different causes of outages (e.g., severe weather, equipment failure) have different impacts on the duration. Severe weather events may cause longer outages compared to equipment failures.
+
+I use `GridSearchCV` to perform hyperparameter tuning with 5-fold cross-validation. The best hyperparameters found were:
+
+`n_estimators`: 200 – The number of trees in the forest.
+`max_depth`: 10 – The maximum depth of each tree.
+`min_samples_split`: 5 – The minimum number of samples required to split an internal node.
+`min_samples_leaf`: 2 – The minimum number of samples required to be at a leaf node.
+
+For the performance of Final Model, **Mean Squared Error (MSE)** is 48,731,353.86 and **R² Score** is 0.21, which are significant improvement over the Baseline Model (It was **Mean Squared Error (MSE)**: 59924559.29, and **R² Score**: 0.02).
 
 ## Fairness Analysis
 
+I am going to check if my final model performs worse for power outages in the Northeast compared to the South. To do this, I will use Root Mean Squared Error (RMSE) as our evaluation metric. I will also run a permutation test to see if the difference in performance between these two regions is significant.
+
+**Null Hypothesis (H₀)**: The model's performance (RMSE) is the same for the Northeast and South regions, and any observed difference is due to random chance.
+
+**Alternative Hypothesis (H₁)**: The model's performance (RMSE) is different between the Northeast and South regions.
+
+**Test Statistic**: Difference in RMSE between the Northeast and South regions.
+
+**Significance Level**: I will use a significance level of 0.05.
+
+### The results are:
+
+1. **Observed RMSE (Northeast)**: 4158.82
+2. **Observed RMSE (South)**: 3788.59
+3. **Observed Difference in RMSE**: 370.23
+4. **P-Value**: 0.9130
+
+Since the p-value (0.9130 > 0.5) is higher than the significance level, I fail to reject the null hypothesis. This means the difference in RMSE between the Northeast and South is probably just random chance. In short, my model does not seem to show any significant bias between these two regions.
+
+The figure below shows the distribution of the statistic.
+
 <iframe
-  src="assets/fairness_model.html"
+  src="assets/fairness.html"
   width="800"
   height="600"
   frameborder="0"
