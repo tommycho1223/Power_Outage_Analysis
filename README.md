@@ -244,6 +244,10 @@ I am going to check if my final model performs worse for power outages in the No
 
 **Significance Level**: I will use a significance level of 0.05.
 
+**Group X**: Outages occurring in the Northeast climate region.
+
+**Group Y**: Outages occurring in the South climate region.
+
 ### The results:
 
 1. **Observed RMSE (Northeast)**: 4158.82
