@@ -182,13 +182,14 @@ My baseline model aims to predict the duration of power outages (in minutes) usi
 2. `month`: The month when the outage occurred (Quantitative).
 - **Numerical Feature Scaling**: The month feature was standardized using StandardScaler to ensure it contributes appropriately to the model.
 
-The performance metrics are:
+The performance metrics:
 
 1. **Mean Squared Error (MSE)** Measures the average squared difference between the predicted and actual outage durations.
 
 2. **R² Score** Indicates how well the model explains the variance in the target variable.
 
-### The results
+### The results:
+
 1. **Mean Squared Error (MSE)**: 59924559.29
 2. **R² Score**: 0.02
 
@@ -201,17 +202,17 @@ In the final model, I will aim to improve these metrics by incorporating additio
 
 In the Final Model, the following features were used:
 
-### Quantitative Feature, Scaled using StandardScaler
+### Quantitative Feature, Scaled using StandardScaler:
 
-1. `month`: The month of the outage captures seasonality patterns that can affect power outages. For example, certain regions are more prone to severe weather (e.g., hurricanes, snowstorms) during specific months.
+1. **month**: The month of the outage captures seasonality patterns that can affect power outages. For example, certain regions are more prone to severe weather (e.g., hurricanes, snowstorms) during specific months.
 
-2. `anomaly_level`: This feature represents the El Niño/La Niña index, which measures oceanic anomalies affecting global weather. These anomalies can result in extreme weather patterns, influencing the frequency and duration of outages.
+2. **anomaly_level**: This feature represents the El Niño/La Niña index, which measures oceanic anomalies affecting global weather. These anomalies can result in extreme weather patterns, influencing the frequency and duration of outages.
 
-### Nominal Feature, One-Hot Encoded
+### Nominal Feature, One-Hot Encoded:
 
-3. `climate_region`: Different regions have varying infrastructure resilience and susceptibility to different weather conditions, which can influence how long it takes to restore power after an outage.
+3. **climate_region**: Different regions have varying infrastructure resilience and susceptibility to different weather conditions, which can influence how long it takes to restore power after an outage.
 
-4. `cause_category`: Different causes of outages (e.g., severe weather, equipment failure) have different impacts on the duration. Severe weather events may cause longer outages compared to equipment failures.
+4. **cause_category**: Different causes of outages (e.g., severe weather, equipment failure) have different impacts on the duration. Severe weather events may cause longer outages compared to equipment failures.
 
 I use `GridSearchCV` to perform hyperparameter tuning with 5-fold cross-validation. The best hyperparameters found were:
 
@@ -224,6 +225,7 @@ I use `GridSearchCV` to perform hyperparameter tuning with 5-fold cross-validati
 `min_samples_leaf`: 2 – The minimum number of samples required to be at a leaf node.
 
 ### The performance of Final Model
+
 1. **Mean Squared Error (MSE)**: 48,731,353.86
 2. **R² Score**: 0.21
 
@@ -242,7 +244,7 @@ I am going to check if my final model performs worse for power outages in the No
 
 **Significance Level**: I will use a significance level of 0.05.
 
-### The results are:
+### The results:
 
 1. **Observed RMSE (Northeast)**: 4158.82
 2. **Observed RMSE (South)**: 3788.59
