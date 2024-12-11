@@ -86,7 +86,7 @@ Next, I perform the other histogram to present the distribution of anomaly level
   frameborder="0"
 ></iframe>
 
-Positive anomaly levels mean warm ocean temperatures, while negative anomaly levels mean cool ocean temperatures. The graph shows the range from approximately `-1.5` to `+2.5`, and negative anomaly levels cause more power outages. It is interesting that it seems around `+2.0` is ideal temperatures to avoid power outages.
+Positive anomaly levels mean warm ocean temperatures, while negative anomaly levels mean cool ocean temperatures. The graph shows the range from approximately `-1.5` to `+2.5`, and negative anomaly levels cause more power outages. It is interesting that it seems around `+1.5` and `+2.0` is ideal temperatures to avoid power outages.
 
 ### Bivariate Analysis
 
