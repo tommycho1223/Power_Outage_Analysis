@@ -46,8 +46,6 @@ Below are the column I keep for analyzing.
 | **outage_restoration** | Power outage store date and time (I combined date and time in this new column from the original columns) |
 
 
-
-
 ## Data Cleaning and Exploratory Data Analysis
 
 - In order to make it easier to understand the dataset and accurately observe and analyze data, I drop the first five rows because they are meaningless for this analysis (the top fifth rows include metadata and lack meaningful content). I take the sixth row in the original dataset as the column names. Also, I drop columns that are not relevant to the topic I am analyzing next, respectively: **OBS**, **POSTAL.CODE**, **NERC.REGION**, **HURRICANE.NAMES**, **DEMAND.LOSS.MW**, **CUSTOMERS.AFFECTED**, **RES.PRICE**, **COM.PRICE**, **IND.PRICE**, **TOTAL.PRICE**, **RES.SALES**, **COM.SALES**, **IND,SALES**, **TOTAL.SALES**, **RES.PERCEN**, **COM.PERCEN**, **IND.PERCEN**, **RES.CUSTOMERS**, **COM.CUSTOMERS**, **IND.CUSTOMERS**, **TOTAL.CUSTOMERS**, **RES.CUST.PCT**, **COM.CUST.PCT**, **IND.CUST.PCT**, **PC.REALGSP.STATE**, **PC.REALGSP.USA**, **PC.REALGSP.REL**, **PC.REALGSP.CHANGE**, **UTIL.REALGSP**, **UTIL.CONTRI**, **PI.UTIL.OFUSA**, **POPULATION**, **POPPCT_URBAN**, **POPPCT_UC**, **POPDEN_UC**, **AREAPCT_URBAN**, **AREAPCT_UC**, **PCT_LAND**, **PCT_WATER_TOT**, **PCT_WATER_INLAND**, **CAUSE.CATEGORY.DETAIL**, **CLIMATE.CATEGORY**, **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**.
@@ -64,7 +62,7 @@ Below are the column I keep for analyzing.
 | 2012 | 6 | Minnesota | East North Central | -0.1 | 2279 | 18.2 | severe weather | 2550 | 2012-06-19 04:30:00 | 2012-06-20 23:00:00 |
 | 2015 | 7 | Minnesota | East North Central | 1.2 | 2279 | 18.2 | severe weather | 1740 | 2015-07-18 02:00:00 | 2015-07-19 07:00:00 |
 
-- I notice that **climate_region** has non-trivial missingness, and I will analyze it using the permutation test in **Assessment of Missingness** to see if the missingness depended on **us_state**. For now, I decided not to remove the `NaN` values because I want to investigate the reason for the missing values. However, I will create other datasets without `NaN` values when I perform permutation tests to ensure accuracy in the analysis.
+- I notice that **climate_region** has non-trivial missingness, and I will analyze it using the permutation test in **Assessment of Missingness** to see if the missingness depended on **us_state**. For now, I decided not to remove the `NaN` values because I want to investigate the reason for the missing values. However, I will create other datasets without `NaN` values when I perform permutation tests, and Baseline and Final Model to ensure accuracy in the analysis.
 
 ### Univariate Analysis
 
@@ -115,7 +113,6 @@ I create a scatter plot to show the relationship between anomaly level and outag
 There does not appear to be a strong relationship between anomaly level and outage duration. The outage Duration vs. Anomaly Level graph indicates that a positive anomaly level likely has a lower power outage durations and smaller number of occurrences. A few extreme values (above 40,000 hours) are present at both positive and negative anomaly levels but `-0.4` and `-0.5` have significant outliers. Despite most points clustering around lower outage durations, there are several extreme outliers with very long outage durations.
 
 
-
 ## Assessment of Missingness
 
 To dig deeper into the missing data in the **climate_region**, I run a permutation test to see if this missingness is linked to the **us_state**. I believe that **climate_region** is **NMAR** (Not Missing at Random).
@@ -132,7 +129,6 @@ To dig deeper into the missing data in the **climate_region**, I run a permutati
 ></iframe>
 
 The figure shows that the missing values ​​in **climate_region** belong to *Hawaii* and *Alaska*, which makes sense because *Hawaii* and *Alaska* are not in the continental U.S. Therefore, they don't count as either regions. The missing **climate_region** data is likely **NMAR** because it appears to be influenced by the exclusion of `Hawaii` and `Alaska` from the typical climate region classification.
-
 
 
 ## Hypothesis Testing
@@ -156,6 +152,7 @@ I will use a significance level of `0.05`. If the p-value is less than `0.05`, I
 
 The p-value is lesser than `0.05`, so we reject the null hypothesis. The evidence clearly shows that power outage frequency varies across different climate regions. In other words, some regions experience more outages than others. This could be due to factors like local weather patterns, how sturdy the infrastructure is, or other environmental conditions.
 
+
 ## Framing a Prediction Problem
 
 My model will predict **the duration of a power outage** based on various factors available in the dataset. This is a **regression problem** since the response variable, outage_duration, is a continuous numerical value.
@@ -174,6 +171,7 @@ The features are:
 
 My evaluation metric is Root Mean Squared Error (RMSE) because RMSE measures the average size of prediction errors, making it a solid choice for continuous numerical predictions like outage durations. It also penalizes larger errors more heavily than Mean Absolute Error (MAE), which is crucial since big miscalculations in outage durations can cause serious disruptions. Plus, RMSE is easy to understand because it uses the same units as the response variable—in this case, minutes.
 
+
 ## Basline Model
 
 My baseline model aims to predict the duration of power outages (in minutes) using a simple linear regression model with two features:
@@ -190,9 +188,14 @@ The performance metrics are:
 
 2. **R² Score** Indicates how well the model explains the variance in the target variable.
 
-As the result, **Mean Squared Error (MSE)** is 59924559.29, and **R² Score** is 0.02. The baseline model’s performance is poor due to limited features and the complexity of the prediction task. Plus, predicting outage duration is not straightforward--many factors interact and influence the outcome. A basic model with only a few features might miss these complexities and give oversimplified predictions.
+### The results
+1. **Mean Squared Error (MSE)**: 59924559.29
+2. **R² Score**: 0.02
+
+The baseline model’s performance is poor due to limited features and the complexity of the prediction task. Plus, predicting outage duration is not straightforward--many factors interact and influence the outcome. A basic model with only a few features might miss these complexities and give oversimplified predictions.
 
 In the final model, I will aim to improve these metrics by incorporating additional features, feature engineering, and using a more powerful model.
+
 
 ## Final Model
 
@@ -213,11 +216,19 @@ In the Final Model, the following features were used:
 I use `GridSearchCV` to perform hyperparameter tuning with 5-fold cross-validation. The best hyperparameters found were:
 
 `n_estimators`: 200 – The number of trees in the forest.
+
 `max_depth`: 10 – The maximum depth of each tree.
+
 `min_samples_split`: 5 – The minimum number of samples required to split an internal node.
+
 `min_samples_leaf`: 2 – The minimum number of samples required to be at a leaf node.
 
-For the performance of Final Model, **Mean Squared Error (MSE)** is 48,731,353.86 and **R² Score** is 0.21, which are significant improvement over the Baseline Model (It was **Mean Squared Error (MSE)**: 59924559.29, and **R² Score**: 0.02).
+### The performance of Final Model
+1. **Mean Squared Error (MSE)**: 48,731,353.86
+2. **R² Score**: 0.21
+
+They are significant improvement over the Baseline Model (It was **MSE**: 59924559.29, and **R² Score**: 0.02).
+
 
 ## Fairness Analysis
 
