@@ -52,7 +52,7 @@ Below are the column I keep for analyzing.
 
 - Before I drop **OUTAGE.START.TIME**, **OUTAGE.START.DATE**, **OUTAGE.RESTORATION.TIME** and **OUTAGE.RESTORATION.DATE**, I combine **outage_start_date** and **outage_start_time** into a new **outage_start** column, and **outage_restoration_date** and **outage_restoration_time** into a new **outage_restoration** column for easier analysis.
 
-- After filtering and cleaning, we reset the DataFrame index. Below are the first few rows of the cleaned dataset.
+- After filtering and cleaning, I reset the DataFrame index. Below are the first few rows of the cleaned dataset.
 
 | year | month | us_state | climate_region | anomaly_level | popden_urban | popden_rural | cause_category | outage_duration | outage_start | outage_restoration |
 | ----- | --- | --------- | ------------------ | ---- | ----- | ---- | ------------ | ----- | ----------------------- | ----------------------- |
@@ -150,7 +150,7 @@ I will use a significance level of `0.05`. If the p-value is less than `0.05`, I
   frameborder="0"
 ></iframe>
 
-The p-value is lesser than `0.05`, so we reject the null hypothesis. The evidence clearly shows that power outage frequency varies across different climate regions. In other words, some regions experience more outages than others. This could be due to factors like local weather patterns, how sturdy the infrastructure is, or other environmental conditions.
+The p-value is lesser than `0.05`, so I reject the null hypothesis. The evidence clearly shows that power outage frequency varies across different climate regions. In other words, some regions experience more outages than others. This could be due to factors like local weather patterns, how sturdy the infrastructure is, or other environmental conditions.
 
 
 ## Framing a Prediction Problem
